@@ -8,12 +8,17 @@ typedef struct list {
 
 typedef struct {
     int width;
-    list_t head;
-    list_t tail;
+    int node_count;
+    int** connections;
+    list_t matrix_head;
+    list_t matrix_tail;
 } *graph_t;
 
 int join_row(graph_t graph, int* new_row);
 void print_matrix(graph_t graph, FILE* out);
 void free_matrix(graph_t graph);
+int init_connections(graph_t graph);
+void free_connections(graph_t graph);
+void print_connection_matrix(graph_t graph, FILE* out);
 
 #endif
