@@ -1,6 +1,8 @@
 #ifndef LEIDEN_H
 #define LEIDEN_H
 
+#include "row_list.h"
+
 typedef struct L
 {
 	int **group;
