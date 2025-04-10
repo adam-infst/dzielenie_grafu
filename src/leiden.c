@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "leiden.h"
-
+#include "row_list.h"
 
 void init_L(int N,L_t L)
 {
