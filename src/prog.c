@@ -271,10 +271,7 @@ int main(int argc, char** argv)
         current_node++;
         last = next;
     }
-	// while()
-	// {
-		// // trzeba dokończyć
-	// }
+	
 	
 
 	int N=graph->node_count;//amount of nodes
@@ -309,13 +306,16 @@ int main(int argc, char** argv)
 			igc=0;
 			for(int j=0;j<N;j++)
 			{
-				printf("%d",L->group[i][j]);
+				if(L->ng[j]==i)
+				{
+					printf("%d,",j);
 				for(int k=0;k<N;k++)
 				{
-					if(L->ng[j] != L->ng[k] && graph->connections[j][k]==1 && L->ng[j]==i)
+					if(L->ng[j] != L->ng[k] && graph->connections[j][k]==1)
 					{
 						igc++;
 					}
+				}
 				}
 			}
 			tigc+=igc;
