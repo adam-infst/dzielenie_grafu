@@ -168,11 +168,9 @@ free_L(N,L2);
 
 int main(int argc, char** argv)
 {
-    
-    	FILE* in = fopen(argv[1], "r");
-    
+    FILE* in = fopen(argv[1], "r");
+    FILE* out = fopen("graph_to_matrix.txt", "w");
 
-    FILE* out = stdout; //jescze nie wersja ostateczna
     if (in == NULL || out == NULL) {
         printf("Nie znalezionio pliku \n");
         return 1;
@@ -187,11 +185,8 @@ int main(int argc, char** argv)
             c = fgetc(in);
         }
     }
-    graph_t graph = malloc(sizeof(*graph));
-    graph->matrix_head = NULL;
-    graph->matrix_tail = NULL;
-    graph->connections = NULL;
-    graph->node_count = 0; //to będzie liczone podczas uzupełniania macierzy
+
+    graph_t graph = init_graph();
 
     fseek(in, line[0], SEEK_SET);
     fscanf(in, "%d", &graph->width);
@@ -237,6 +232,7 @@ int main(int argc, char** argv)
         join_row(graph, row);
         last = next;
     }
+	//printf("node_count %d \n", graph->node_count);
     init_connections(graph); //zwraca już wyzerowaną macierz
 
     print_matrix(graph, out);
@@ -249,7 +245,7 @@ int main(int argc, char** argv)
         printf("Zły format danych: last= %d, c= %c \n", last, c);
         return 2;
     }
-    while(c != '\n' && c != EOF)
+    while(c != '\n' && c != EOF ) //uwaga linia 5 kończy się wcześniej niż linia 4
     {
         int next;
         fseek(in, line[4], SEEK_SET);
@@ -269,12 +265,18 @@ int main(int argc, char** argv)
             line[3] = ftell(in);
 
             graph->connections[current_node][index] = 1;
-	    graph->connections[index][current_node] = 1;
-            fprintf(out, "%d - %d\n", current_node, index);
+            graph->connections[index][current_node] = 1;
+			fprintf(out, "%d - %d\n", current_node, index);
         }
         current_node++;
         last = next;
     }
+	// while()
+	// {
+		// // trzeba dokończyć
+	// }
+	
+
 	int N=graph->node_count;//amount of nodes
 	L_t L = malloc(sizeof(*L));
 	init_L(N,L);
@@ -322,11 +324,9 @@ int main(int argc, char** argv)
 	}
 	printf("suma polaczen miedzy grupami to:%d\n",tigc/2);
 
-    //print_connection_matrix(graph, out);
-    //printf("[%s] \n", argv[1]);
+    //print_connection_table(graph, out);
     free_L(N,L);
-    free_connections(graph);
-    free_matrix(graph);
+    free_graph(graph);
     fclose(in);
     return 0;
 }

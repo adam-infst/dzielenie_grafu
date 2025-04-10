@@ -4,6 +4,17 @@
 
 #include "row_list.h"
 
+graph_t init_graph()
+{
+    graph_t graph = malloc(sizeof(*graph));
+    graph->matrix_head = NULL;
+    graph->matrix_tail = NULL;
+    graph->connections = NULL;
+    graph->node_count = 0; //to będzie liczone podczas uzupełniania macierzy
+    graph->width = 0;
+    return graph;
+}
+
 int join_row(graph_t graph, int* new_row)
 {
     list_t new_el = malloc(sizeof(*new_el));
@@ -78,7 +89,21 @@ void free_connections(graph_t graph)
     free(graph->connections);
 }
 
-void print_connection_matrix(graph_t graph, FILE* out) //sprawdzenie czy dobrze się zapisały dane w strukturze
+void print_sorted_connections(graph_t graph, FILE* out)
+{
+    for (int i = 0; i < graph->node_count; i++)
+    {
+        for (int j = 0; j < graph->node_count; j++)
+        {
+            if (graph->connections[i][j] == 1)
+            {
+                fprintf(out, "%d - %d\n", i, j);
+            }
+        }
+    }
+}
+
+void print_connection_table(graph_t graph, FILE* out) //sprawdzenie czy dobrze się zapisały dane w strukturze
 {
     for (int i = 0; i < graph->node_count; i++)
     {
@@ -89,4 +114,10 @@ void print_connection_matrix(graph_t graph, FILE* out) //sprawdzenie czy dobrze 
         }
         fprintf(out, " ] \n");
     }
+}
+
+void free_graph(graph_t graph)
+{
+    free_connections(graph);
+    free_matrix(graph);
 }
