@@ -160,7 +160,7 @@ int main(int argc, char** argv)
 				}
 			}
 			tigc+=igc;
-			printf("\nnode count:%d connections to other groups: %d\n",L->g_nc[i],igc);
+			printf("\nnode count:%d connections to other groups: %d\n\n",L->g_nc[i],igc);
 		}
 	}
 	printf("suma polaczen miedzy grupami to:%d\n",tigc/2);
