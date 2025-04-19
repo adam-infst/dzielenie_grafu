@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         printf("Zły format danych: last= %d, c= %c \n", last, c);
         return 2;
     }
-    while(c != '\n' && c != EOF)
+    while(c != '\n')
     {
         int* row = malloc(graph->width * sizeof(int)); //przy każdej iteracji przypisuje nowy obszar pamięci na nowy rząd
         if(row == NULL) {
@@ -73,7 +73,6 @@ int main(int argc, char** argv)
         join_row(graph, row);
         last = next;
     }
-	//printf("node_count %d \n", graph->node_count);
     init_connections(graph); //zwraca już wyzerowaną macierz
 
     print_matrix(graph, out);
@@ -86,19 +85,22 @@ int main(int argc, char** argv)
         printf("Zły format danych: last= %d, c= %c \n", last, c);
         return 2;
     }
-    while(c != '\n' && c != EOF ) //uwaga linia 5 kończy się wcześniej niż linia 4
+    int scanned = 2;
+    while(scanned == 2) //uwaga linia 5 kończy się wcześniej niż linia 4
     {
         int next;
         fseek(in, line[4], SEEK_SET);
-        fscanf(in, "%d%c", &next, &c);
+        scanned = fscanf(in, "%d%c", &next, &c); //z jakiegoś powodu fscanf %d%c nie umie wczytać EOF do char więc nie da się zrobić pętli z takim warunkiem
         line[4] = ftell(in);
-        
+        //ustawiamy scanned na początku pętli, więc logika w środku wykona się raz dla scanned != 2, ale tutaj akurat chcemy żeby tak było
+        //printf(" next= %d  last= %d  c5= %c  scanned= %d\n", next, last, c, scanned);;;
+
         int current_node;
-        fseek(in, line[3], SEEK_SET); // wczytujemy nr węzła
+        fseek(in, line[3], SEEK_SET);
         fscanf(in, "%d%c", &current_node, &c);
         line[3] = ftell(in);
         
-        for (int i = 0; i < next - last - 1; i++) //wyszukuje położenie następnego węzła next-last razy
+        for (int i = 0; i < next - last - 1; i++)
         {
             int index;
             fseek(in, line[3], SEEK_SET);
@@ -109,10 +111,25 @@ int main(int argc, char** argv)
             graph->connections[index][current_node] = 1;
 			fprintf(out, "%d - %d\n", current_node, index);
         }
-        current_node++;
         last = next;
     }
-	
+	//skończyła się już linia 5, ale trzeba jeszcze doczytać do końca linię 4
+    int last_node;
+    fseek(in, line[3], SEEK_SET);
+    fscanf(in, "%d%c", &last_node, &c);
+    line[3] = ftell(in);
+        
+    while(c != '\n')
+    {
+        int index;
+        fseek(in, line[3], SEEK_SET);
+        scanned = fscanf(in, "%d%c", &index, &c);
+        line[3] = ftell(in);
+
+        graph->connections[last_node][index] = 1;
+        graph->connections[index][last_node] = 1;
+        fprintf(out, "%d - %d\n", last_node, index);
+    }
 	
 
 	int N=graph->node_count;//amount of nodes

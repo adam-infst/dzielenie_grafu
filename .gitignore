@@ -1,3 +1,5 @@
 /.vscode/
 /src/.vscode/
 /*.exe
+/other/
+/graph_to_matrix.txt
