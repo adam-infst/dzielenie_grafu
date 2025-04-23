@@ -10,9 +10,10 @@
 int main(int argc, char** argv)
 {
     FILE* in = fopen(argv[1], "r");
-    FILE* out = fopen("graph_to_matrix.txt", "w");
+    FILE* matrix_out = fopen("graph_to_matrix.txt", "w");
+    FILE* groups_out = fopen("groups.txt", "w");
 
-    if (in == NULL || out == NULL) {
+    if (in == NULL || matrix_out == NULL) {
         printf("Nie znalezionio pliku \n");
         return 1;
     }
@@ -75,7 +76,7 @@ int main(int argc, char** argv)
     }
     init_connections(graph); //zwraca już wyzerowaną macierz
 
-    print_matrix(graph, out);
+    print_matrix(graph, matrix_out);
 
     fseek(in, line[4], SEEK_SET); // tu będzie jeszcze zrobiony refactoring
     fscanf(in, "%d%c", &last, &c);
@@ -109,7 +110,7 @@ int main(int argc, char** argv)
 
             graph->connections[current_node][index] = 1;
             graph->connections[index][current_node] = 1;
-			fprintf(out, "%d - %d\n", current_node, index);
+			fprintf(matrix_out, "%d - %d\n", current_node, index);
         }
         last = next;
     }
@@ -128,7 +129,7 @@ int main(int argc, char** argv)
 
         graph->connections[last_node][index] = 1;
         graph->connections[index][last_node] = 1;
-        fprintf(out, "%d - %d\n", last_node, index);
+        fprintf(matrix_out, "%d - %d\n", last_node, index);
     }
 	
 
@@ -167,6 +168,7 @@ int main(int argc, char** argv)
 				if(L->ng[j]==i)
 				{
 					printf("%d,",j);
+                    fprintf(groups_out, " %d", j);
 				for(int k=0;k<N;k++)
 				{
 					if(L->ng[j] != L->ng[k] && graph->connections[j][k]==1)
@@ -178,14 +180,17 @@ int main(int argc, char** argv)
 			}
 			tigc+=igc;
 			printf("\nnode count:%d connections to other groups: %d\n\n",L->g_nc[i],igc);
+            fprintf(groups_out, "\n");
 		}
 	}
 	printf("suma polaczen miedzy grupami to:%d\n",tigc/2);
 
-    //print_connection_table(graph, out);
+    //print_connection_table(graph, matrix_out);
     free_L(N,L);
     free_graph(graph);
     fclose(in);
+    fclose(matrix_out);
+    fclose(groups_out);
     return 0;
 }
 
